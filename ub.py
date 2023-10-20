@@ -566,4 +566,8 @@ def tekrarla(message):
         
         bot.reply_to(message, metin)
 
-bot.polling()
+while True:
+    try:
+        bot.polling(none_stop=True)
+    except Exception as e:
+        print(f"Hata: {e}")
