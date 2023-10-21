@@ -18,7 +18,7 @@ def is_user_member(user_id, chat_id):
         print(str(e))
         return False
 
-@bot.message_handler(commands=["start"])
+@bot.message_handler(commands=['start'])
 def start(message):
     user_id = message.from_user.id
     user_name = message.from_user.first_name
@@ -67,6 +67,10 @@ def commands(call):
         telebot.types.InlineKeyboardButton("Iban Sorgu", callback_data="iban_sorgu")
     )
     markup.add(
+        telebot.types.InlineKeyboardButton("Plaka Borç", callback_data="plaka_borc"),
+        telebot.types.InlineKeyboardButton("IP Sorgu", callback_data="ip_sorgu")
+    )
+    markup.add(
         telebot.types.InlineKeyboardButton("Ek Komutlar", callback_data="extra"),
         telebot.types.InlineKeyboardButton("⬅️ Geri", callback_data="back")
     )
@@ -77,7 +81,7 @@ def commands(call):
 def back(call):
     start(call.message)
 
-@bot.callback_query_handler(func=lambda call: call.data in ["name", "tc", "gsm_tc", "tc_gsm", "aile", "tc_plus", "extra", "sms_bomber", "iban_sorgu"])
+@bot.callback_query_handler(func=lambda call: call.data in ["name", "tc", "gsm_tc", "tc_gsm", "aile", "tc_plus", "extra", "sms_bomber", "iban_sorgu", "plaka_borc", "ip_sorgu"])
 def other_commands(call):
     if call.data == "name":
         response = "Ad Soyad Sorgu Yardım:\n\n/sorgu -isim <kurbanın adı> -soyisim <kurbanın soy adı> -il <kurbanın il>\n\nİki isimli Sorgulama için -isim2 kullanabilirsiniz örnek:\n/sorgu -isim betül -isim2 berra -soyisim kapancı -il istanbul"
@@ -91,10 +95,14 @@ def other_commands(call):
         response = "Aile Sorgu Yardım:\n\n/aile <kurbanın tc>\n\nHer Gün Çok Güzel Paylaşımlar Olan Kanalımıza Katıl. @illegalchecker"
     elif call.data == "tc_plus":
         response = "TC Plus Sorgu Yardım:\n\n/tcplus <kurbanın tc>\n\nSohbet Grubumuza Katılmaya Ne Dersin?"
-    elif call.data == "iban_sorgu":
-        response = "İban Sorgu Yardım:\n\n/iban <kurbanın iban>\n\nkurbanın ibanı birleşik girin örnek TR317377373722"
     elif call.data == "sms_bomber":
         response = "Sms Bomber Yardım:\n\n/sms <kurbanın gsm>\n\nSohbet Grubumuza Katılmaya Ne Dersin? @Majestesohbet"
+    elif call.data == "iban_sorgu":
+        response = "İban Sorgu Yardım:\n\n/iban <kurbanın iban>\n\nkurbanın ibanı birleşik girin örnek TR317377373722"
+    elif call.data == "plaka_borc":
+        response = "Plaka Borç Sorgu Yardım:\n\n/plakaborc <kurbanın plaka>\n\nÖrnek: /plakaborc 34ABC01"
+    elif call.data == "ip_sorgu":
+        response = "IP Sorgu Yardım:\n\n/ip <kurbanın ip>\n\nÖrnek: /ip 1.1.1.1"
     elif call.data == "extra":
         response = "Ekstra Komutlar:\n\n/yaz - Verdiğiniz Metni Deftere Yazar.\n\n/tekrarla Verdiğiniz Metni Tekrarlar\n\n@illegalchecker ve @Majestesohbet Katılmayı Unutma"
 
@@ -104,6 +112,7 @@ def other_commands(call):
     )
 
     bot.edit_message_text(response, call.message.chat.id, call.message.message_id, reply_markup=markup)
+
 
 def is_user_member(user_id, chat_id):
     try:
@@ -512,7 +521,7 @@ def gsmtc_sorgula(message):
                 gsm = person["GSM"]
                 engel = person["ENGEL"]
 
-                # Bilgileri formatla
+                
                 info = f"""
 ╭━━━━━━━━━━━━━╮
 ┃➥ GSM: {gsm}
@@ -646,6 +655,64 @@ def send_sms(message):
 
     
     bot.delete_message(chat_id, start_message.message_id)
+
+@bot.message_handler(commands=['ip'])
+def ip(message):
+    
+    ip = message.text.split(' ')[1]
+
+    
+    api_url = f'http://213.238.177.177/o7apiservis/extra/apiv4.php?&ip={ip}'
+    response = requests.get(api_url)
+
+    if response.status_code == 200:
+        data = json.loads(response.text)
+        if "country" in data:
+            response_message = f"╭━━━━━━━━━━━━━╮\n" \
+                              f"┃➥ ÜLKE: {data['country']}\n" \
+                              f"┃➥ ÜLKE KODU: {data['countryCode']}\n" \
+                              f"┃➥ BÖLGE: {data['region']}\n" \
+                              f"┃➥ BÖLGE ADI: {data['regionName']}\n" \
+                              f"┃➥ ŞEHİR: {data['city']}\n" \
+                              f"┃➥ ZIP KOD: {data['zip']}\n" \
+                              f"┃➥ ENLEM: {data['lat']}\n" \
+                              f"┃➥ SAAT DİLİMİ: {data['timezone']}\n" \
+                              f"┃➥ İSP: {data['isp']}\n" \
+                              f"┃➥ ORG: {data['org']}\n" \
+                              f"╰━━━━━━━━━━━━━╯"
+            bot.send_message(message.chat.id, response_message)
+        else:
+            bot.send_message(message.chat.id, "IP adresi bulmadı.")
+    else:
+        bot.send_message(message.chat.id, "Api Gg.")
+
+@bot.message_handler(commands=['plakaborc'])
+def pborc(message):
+    
+    plaka = message.text.split(' ')[1]
+
+    
+    api_url = f'http://213.238.177.177/o7apiservis/plaka.php?&plaka={plaka}'
+    response = requests.get(api_url)
+
+    if response.status_code == 200:
+        data = json.loads(response.text)
+        if "plaka" in data:
+            response_message = f"╭━━━━━━━━━━━━━╮\n" \
+                              f"┃➥ PLAKA: {data['plaka']}\n" \
+                              f"┃➥ B. TÜRÜ: {data['borcTuru']}\n" \
+                              f"┃➥ AD SOYAD: {data['Isimsoyisim']}\n" \
+                              f"┃➥ TC: {data['Tc']}\n" \
+                              f"┃➥ BURO: {data['Buro']}\n" \
+                              f"┃➥ BURO TEL: {data['BuroTelefon']}\n" \
+                              f"┃➥ YAZILAN CEZA: {data['YazilanCeza']}\n" \
+                              f"┃➥ TOPLAM BORÇ: {data['ToplamCeza']}\n" \
+                              f"╰━━━━━━━━━━━━━╯"
+            bot.reply_to(message, response_message)
+        else:
+            bot.reply_to(message, "Sadece Borçlu Olan Kişiler Çıkar Verdiğiniz Plaka Bulunmadı.")
+    else:
+        bot.reply_to(message, "apiye get isteği atamadım :(")
 
 while True:
     try:
