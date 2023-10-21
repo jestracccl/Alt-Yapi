@@ -589,7 +589,7 @@ def iban_sorgula(message):
     user_input = message.text.split(' ', 1)
 
     if len(user_input) != 2:
-        bot.send_message(chat_id, "Lütfen geçerli bir IBAN girin.")
+        bot.send_message(chat_id, "Lütfen Geçerli IBAN Girin Birleşik Şekilde.")
         return
 
     iban = user_input[1]
