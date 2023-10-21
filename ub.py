@@ -3,7 +3,7 @@ import requests
 import urllib
 
 
-TOKEN = "6020686531:AAF-SiwmrR0Tu-JsWsk8c73BL2Ii6ez2fIU"
+TOKEN = input("Bot Token Gir: ")
 
 
 bot = telebot.TeleBot(TOKEN)
