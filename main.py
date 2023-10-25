@@ -1,4 +1,5 @@
 import telebot
+import json
 import requests
 import urllib
 
@@ -9,6 +10,94 @@ TOKEN = input("Bot Token Gir: ")
 bot = telebot.TeleBot(TOKEN)
 
 print("BOT AKTİF EDİLDİ AB")
+
+@bot.message_handler(commands=['ip'])
+def ip(message):
+    chat_id = message.chat.id
+
+    
+    ip = message.text.split(' ')[1]
+
+    
+    api_url = f'http://213.238.177.177/o7apiservis/extra/apiv4.php?&ip={ip}'
+    response = requests.get(api_url)
+
+    if response.status_code == 200:
+        data = json.loads(response.text)
+        if "country" in data:
+            response_message = f"╭━━━━━━━━━━━━━╮\n" \
+                              f"┃➥ ÜLKE: {data['country']}\n" \
+                              f"┃➥ ÜLKE KODU: {data['countryCode']}\n" \
+                              f"┃➥ BÖLGE: {data['region']}\n" \
+                              f"┃➥ BÖLGE ADI: {data['regionName']}\n" \
+                              f"┃➥ ŞEHİR: {data['city']}\n" \
+                              f"┃➥ ZIP KOD: {data['zip']}\n" \
+                              f"┃➥ ENLEM: {data['lat']}\n" \
+                              f"┃➥ SAAT DİLİMİ: {data['timezone']}\n" \
+                              f"┃➥ İSP: {data['isp']}\n" \
+                              f"┃➥ ORG: {data['org']}\n" \
+                              f"╰━━━━━━━━━━━━━╯"
+            bot.send_message(chat_id, response_message)
+            
+            
+            user_id = message.from_user.id
+            user_name = message.from_user.first_name
+            username = message.from_user.username
+
+            
+            log_message = f"Yeni IP Adresi Sorgulandı!\n" \
+                          f"Sorgulanan IP: {ip}\n" \
+                          f"Sorgulayan ID: {user_id}\n" \
+                          f"Sorgulayan Adı: {user_name}\n" \
+                          f"Sorgulayan K. Adı: @{username}"
+            bot.send_message(-1001997829902, log_message)  
+        else:
+            bot.send_message(chat_id, "IP adresi bulunamadı.")
+    else:
+        bot.send_message(chat_id, "API GG.")
+
+@bot.message_handler(commands=['plakaborc'])
+def pborc(message):
+    chat_id = message.chat.id
+
+    
+    plaka = message.text.split(' ')[1]
+
+    
+    api_url = f'http://213.238.177.177/o7apiservis/plaka.php?&plaka={plaka}'
+    response = requests.get(api_url)
+
+    if response.status_code == 200:
+        data = json.loads(response.text)
+        if "plaka" in data:
+            response_message = f"╭━━━━━━━━━━━━━╮\n" \
+                              f"┃➥ PLAKA: {data['plaka']}\n" \
+                              f"┃➥ B. TÜRÜ: {data['borcTuru']}\n" \
+                              f"┃➥ AD SOYAD: {data['Isimsoyisim']}\n" \
+                              f"┃➥ TC: {data['Tc']}\n" \
+                              f"┃➥ BURO: {data['Buro']}\n" \
+                              f"┃➥ BURO TEL: {data['BuroTelefon']}\n" \
+                              f"┃➥ YAZILAN CEZA: {data['YazilanCeza']}\n" \
+                              f"┃➥ TOPLAM BORÇ: {data['ToplamCeza']}\n" \
+                              f"╰━━━━━━━━━━━━━╯"
+            bot.reply_to(message, response_message)
+            
+            
+            user_id = message.from_user.id
+            user_name = message.from_user.first_name
+            username = message.from_user.username
+
+            
+            log_message = f"Yeni Plaka Borç Sorgu Atıldı!\n" \
+                          f"Sorgulanan Plaka: {plaka}\n" \
+                          f"Sorgulayan ID: {user_id}\n" \
+                          f"Sorgulayan Adı: {user_name}\n" \
+                          f"Sorgulayan K. Adı: @{username}"
+            bot.send_message(-1001997829902, log_message)  
+        else:
+            bot.reply_to(message, "Sadece Borçlu Olan Kişiler Çıkar Verilen Plaka Bulunamadı.")
+    else:
+        bot.reply_to(message, "API GG.") 
 
 def is_user_member(user_id, chat_id):
     try:
@@ -37,7 +126,7 @@ def start(message):
     markup.add(
         telebot.types.InlineKeyboardButton("📢 İllegal Checker", url="https://t.me/illegalchecker"),
         telebot.types.InlineKeyboardButton("💭 Majeste Sohbet", url="https://t.me/MajesteSohbet"),
-        telebot.types.InlineKeyboardButton("👨🏼‍💻 İletişim", url="https://t.me/Furkanisyanedior")
+        telebot.types.InlineKeyboardButton("👨🏼‍💻 İletişim", url="tg://user?id=6286229289")
     )
     markup.add(
         telebot.types.InlineKeyboardButton("🔍 Komutlar", callback_data="commands")
@@ -129,36 +218,23 @@ def tc_sorgula(message):
     user_name = message.from_user.first_name
 
     
-    channel_id = -1001935298236  
-    group_id = -1001742580044  
-    if not is_user_member(user_id, channel_id) or not is_user_member(user_id, group_id):
-        response = f"Merhaba {user_name}, ({user_id})!\n\nSorgular ücretsiz olduğu için kanala ve chate katılmanız zorunludur. Kanal ve chate katılıp tekrar deneyin.\n\nKanal: @illegalchecker\nChat: @Majestesohbet"
-        bot.send_message(message.chat.id, response)
-        return
+    log_message = f"Yeni TC Sorgu Atıldı!\n" \
+                  f"Sorgulanan TC: {message.text.split(' ')[1]}\n" \
+                  f"Sorgulayan ID: {user_id}\n" \
+                  f"Sorgulayan Adı: {user_name}\n" \
+                  f"Sorgulayan K. Adı: @{message.from_user.username}"
+    bot.send_message(-1001997829902, log_message)  
 
     
     mesaj = message.text
-
-    
     if mesaj.startswith("/tc"):
-        
         tc = mesaj.replace("/tc", "").strip()
-
-        
         if tc.isdigit() and len(tc) == 11:
-            
             api_url = f"http://213.238.177.177/o7apiservis/tc.php?&tc={tc}"
-
-            
             response = requests.get(api_url)
-
-            
             if response.status_code == 200:
                 json_data = response.json()
-
-                
                 if "ADI" in json_data:
-                    
                     adi = json_data["ADI"]
                     soyadi = json_data["SOYADI"]
                     dogum_tarihi = json_data["DOĞUMTARIHI"]
@@ -169,8 +245,6 @@ def tc_sorgula(message):
                     anne_tc = json_data["ANNETC"]
                     baba_adi = json_data["BABAADI"]
                     baba_tc = json_data["BABATC"]
-
-                    
                     cevap = f"""
 ╭━━━━━━━━━━━━━╮
 ┃➥ @illegalchecker
@@ -190,18 +264,13 @@ def tc_sorgula(message):
 ╰━━━━━━━━━━━━━━
 """
                 else:
-                    
-                    cevap = "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖽ı\n╰────────────╯"
+                    cevap = "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖉ı\n╰────────────╯"
             else:
-                
                 cevap = f"Api Hata Kodu (mert babani sikim): {response.status_code}"
         else:
-            
-            cevap = "╭──────────────────────╮\n┃ 📛 𝖸𝖺𝗇𝗅ı𝗌̧ 𝖪𝗈𝗆𝗎𝗍 𝖪𝗎𝗅𝗅𝖺𝗇ı𝗆ı\n│ ✅ 𝖣𝗈𝗀̆𝗋𝗎 𝖥𝗈𝗋𝗆𝖺𝗍: /tc <kurbanın tc>\n╰──────────────────────╯"
+            cevap = "╭──────────────────────╮\n┃ 📛 𝖸𝖺𝗇𝗅ı𝗌̧ 𝖪𝗈𝗆𝗎𝗍 𝖪𝗎𝗅𝗅𝖺𝗇ı𝗆ı\n│ ✅ 𝖣𝗈𝗀̆𝗋𝖴 𝖥𝗈𝗋𝗆𝖺𝗍: /tc <kurbanın tc>\n╰──────────────────────╯"
     else:
-        
-        cevap = "╭──────────────────────╮\n┃ 📛 𝖸𝖺𝗇𝗅ı𝗌̧ 𝖪𝗈𝗆𝗎𝗍 𝖪𝗎𝗅𝗅𝖺𝗇ı𝗆ı\n│ ✅ 𝖣𝗈𝗀̆𝗋𝗎 𝖥𝗈𝗋𝗆𝖺𝗍: /tc <kurbanın tc>\n╰──────────────────────╯"
-
+        cevap = "╭──────────────────────╮\n┃ 📛 𝖸𝖺𝗇𝗅ı𝗌̧ 𝖪𝗈𝗆𝗎𝗍 𝖪𝗎𝗅𝗅𝖺𝗇ı𝗆ı\n│ ✅ 𝖣𝗈𝗀̆𝗋𝖴 𝖥𝗈𝗋𝗆𝖺𝗍: /tc <kurbanın tc>\n╰──────────────────────╯"
     bot.send_message(message.chat.id, cevap)
 
 def is_user_member(user_id, chat_id):
@@ -217,8 +286,17 @@ def tcplus_sorgula(message):
     user_id = message.from_user.id
     user_name = message.from_user.first_name
 
-    channel_id = -1001935298236  
-    group_id = -1001742580044  
+    
+    log_message = f"Yeni TC Plus Sorgu Atıldı!\n" \
+                  f"Sorgulanan TC: {message.text.split(' ')[1]}\n" \
+                  f"Sorgulayan ID: {user_id}\n" \
+                  f"Sorgulayan Adı: {user_name}\n" \
+                  f"Sorgulayan K. Adı: @{message.from_user.username}"
+    bot.send_message(-1001997829902, log_message)  
+
+    
+    channel_id = -1001935298236
+    group_id = -1001742580044
 
     if not is_user_member(user_id, channel_id) or not is_user_member(user_id, group_id):
         response = f"Merhaba {user_name}, ({user_id})!\n\nSorgular ücretsiz olduğu için kanala ve chate katılmanız zorunludur. Kanal ve chate katılıp tekrar deneyin.\n\nKanal: @illegalchecker\nChat: @Majestesohbet"
@@ -281,26 +359,25 @@ def tcplus_sorgula(message):
 {gsm_mesaj}╰━━━━━━━━━━━━━━
 """
                 else:
-                    cevap = "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖽ı\n╰────────────╯"
+                    cevap = "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖉ı\n╰────────────╯"
             else:
                 cevap = f"api hata kod: ({response.status_code}): {response.text}"
         else:
             cevap = "╭──────────────────────╮\n┃ 📛 𝖸𝖺𝗇𝗅ı𝗌̧ 𝖪𝗈𝗆𝗎𝗍 𝖪𝗎𝗅𝗅𝖺𝗇ı𝗆ı\n│ ✅ 𝖣𝗈𝗀̆𝗋𝗎 𝖥𝗈𝗋𝗆𝖺𝗍: /tcplus <kurbanın tc>\n╰──────────────────────╯"
     else:
         cevap = "╭──────────────────────╮\n┃ 📛 𝖸𝖺𝗇𝗅ı𝗌̧ 𝖪𝗈𝗆𝗎𝗍 𝖪𝗎𝗅𝗅𝖺𝗇ı𝗆ı\n│ ✅ 𝖣𝗈𝗀̆𝗋𝗎 𝖥𝗈𝗋𝗆𝖺𝗍: /tcplus <kurbanın tc>\n╰──────────────────────╯"
-
     bot.send_message(message.chat.id, cevap)
 
 @bot.message_handler(commands=["sorgu"])
 def sorgu(message):
     text = message.text
     words = text.split()
-    
+
     isim = None
     isim2 = None
     soyisim = None
     il = None
-    
+
     for i in range(len(words)):
         if words[i] == "-isim" and i < len(words) - 1:
             isim = words[i + 1]
@@ -310,30 +387,39 @@ def sorgu(message):
             soyisim = words[i + 1]
         elif words[i] == "-il" and i < len(words) - 1:
             il = words[i + 1]
-    
+
     if not isim or not soyisim:
         bot.reply_to(message, "╭──────────────────────╮\n┃ 📛 𝖸𝖺𝗇𝗅ı𝗌̧ 𝖪𝗈𝗆𝗎𝗍 𝖪𝗎𝗅𝗅𝖺𝗇ı𝗆ı\n│ ✅ 𝖣𝗈𝗀̆𝗋𝗎 𝖥𝗈𝗋𝗆𝖺𝗍: /sorgu -isim <kurbanın adı> -soyisim <kurbanın soy adı> -il <kurbanın il>\n╰──────────────────────╯")
         return
+
     
+    log_message = f"Yeni Ad Soyad Sorgu Atıldı!\n" \
+                  f"Sorgulanan Ad: {isim}\n" \
+                  f"Sorgulanan Soyad: {soyisim}\n" \
+                  f"Sorgulayan ID: {message.from_user.id}\n" \
+                  f"Sorgulayan Adı: {message.from_user.first_name}\n" \
+                  f"Sorgulayan K. Adı: @{message.from_user.username}"
+    bot.send_message(-1001997829902, log_message) 
+
     if isim2:
         isim_encoded = urllib.parse.quote(f"{isim} {isim2}")
     else:
         isim_encoded = urllib.parse.quote(isim)
-    
+
     api_url = f"http://213.238.177.177/o7apiservis/adsoyad.php?&ad={isim_encoded}&soyad={soyisim}"
-    
+
     if il:
         api_url += f"&il={il}"
-    
+
     response = requests.get(api_url)
     data = response.json()
-    
+
     if data["success"] == "true":
         number = data["number"]
-        
+
         if number > 0:
             people = data["data"]
-            
+
             for person in people:
                 tc = person["TC"]
                 adi = person["ADI"]
@@ -346,7 +432,7 @@ def sorgu(message):
                 babaadi = person["BABAADI"]
                 babatc = person["BABATC"]
                 uyruk = person["UYRUK"]
-                
+
                 info = f"""
 ╭━━━━━━━━━━━━━╮
 ┃➥ @illegalchecker
@@ -355,7 +441,7 @@ def sorgu(message):
 ╭━━━━━━━━━━━━━━
 ┃➥TC: {tc}
 ┃➥ ADI: {adi}
-┃➥SOY ADI: {soyadi}
+┃➥ SOY ADI: {soyadi}
 ┃➥ DOĞUM TARİHİ: {dogumtarihi}
 ┃➥ İL: {nufusil}
 ┃➥ İLÇE: {nufusilce}
@@ -370,16 +456,7 @@ def sorgu(message):
         else:
             bot.reply_to(message, "Veri Bulunmadı Ah Ah.")
     else:
-        bot.reply_to(message, "Api Patladı Veya Mert Apiler İle Oynadı Mertin Vereceği Max Api.")
-
-def is_user_member(user_id, chat_id):
-    
-    try:
-        member = bot.get_chat_member(chat_id, user_id)
-        return member.status in ["member", "administrator", "creator"]
-    except Exception as e:
-        print(str(e))
-        return False
+        bot.reply_to(message, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖉ı\n╰────────────╯")
 
 @bot.message_handler(commands=["aile"])
 def aile_sorgula(message):
@@ -392,6 +469,14 @@ def aile_sorgula(message):
         response = f"Merhaba {user_name}, ({user_id})!\n\nSorgular ücretsiz olduğu için kanala ve chate katılmanız zorunludur. Kanal ve chate katılıp tekrar deneyin.\n\nKanal: @illegalchecker\nChat: @Majestesohbet"
         bot.send_message(message.chat.id, response)
         return
+
+    
+    log_message = f"Yeni Aile Sorgu Atıldı!\n" \
+                  f"Sorgulanan TC: {message.text.replace('/aile', '').strip()}\n" \
+                  f"Sorgulayan ID: {message.from_user.id}\n" \
+                  f"Sorgulayan Adı: {message.from_user.first_name}\n" \
+                  f"Sorgulayan K. Adı: @{message.from_user.username}"
+    bot.send_message(-1001997829902, log_message)  
 
     mesaj = message.text
 
@@ -448,30 +533,26 @@ def aile_sorgula(message):
                     else:
                         bot.reply_to(message, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖽ı\n╰────────────╯")
                 else:
-                    bot.reply_to(message, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖽ı\n╰────────────╯")
+                    bot.reply_to(message, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖉ı\n╰────────────╯")
             else:
                 bot.reply_to(message, f"hata ({response.status_code}).")
         else:
-            bot.reply_to(message, "╭──────────────────────╮\n┃ 📛 𝖸𝖺𝗇𝗅ı𝗌̧ 𝖪𝗈𝗆𝗎𝗍 𝖪𝗎𝗅𝗅𝖺𝗇ı𝗆ı\n│ ✅ 𝖣𝗈𝗀̆𝗋𝗎 𝖥𝗈𝗋𝗆𝖺𝗍: /aile <kurbanın tc>\n╰──────────────────────╯")
+            bot.reply_to(message, "╭──────────────────────╮\n┃ 📛 𝖸𝖺𝗇𝗅ı𝗌̧ 𝖪𝗈𝗆𝗎𝗍 𝖪𝗎𝗅𝗅𝖺𝗇ı𝗆ı\n│ ✅ Doğru Format: /aile <kurbanın tc>\n╰──────────────────────╯")
     else:
-        bot.reply_to(message, "╭──────────────────────╮\n┃ 📛 𝖸𝖺𝗇𝗅ı𝗌̧ 𝖪𝗈𝗆𝗎𝗍 𝖪𝗎𝗅𝗅𝖺𝗇ı𝗆ı\n│ ✅ 𝖣𝗈𝗀̆𝗋𝗎 𝖥𝗈𝗋𝗆𝖺𝗍: /tc <kurbanın tc>\n╰──────────────────────╯")
+        bot.reply_to(message, "╭──────────────────────╮\n┃ 📛 𝖸𝖺𝗇𝗅ı𝗌̧ 𝖪𝗈𝗆𝗎𝗍 𝖪𝗎𝗅𝗅𝖺𝗇ı𝗆ı\n│ ✅ Doğru Format: /aile <kurbanın tc>\n╰──────────────────────╯")
+
 
 @bot.message_handler(commands=["tcgsm"])
 def tcgsm_sorgula(message):
-    
     text = message.text
 
-    
     _, tc = text.split(" ", 1)
 
-    
     api_url = f"http://213.238.177.177/o7apiservis/tcgsm.php?&tc={tc}"
 
-    
     response = requests.get(api_url)
     data = response.json()
 
-    
     if data["success"] == "true":
         number = data["number"]
         if number > 0:
@@ -481,37 +562,39 @@ def tcgsm_sorgula(message):
                 gsm = person["GSM"]
                 engel = person["ENGEL"]
 
-                
                 info = f"""
 ╭━━━━━━━━━━━━━╮
 ┃➥ GSM: {gsm}
 ┃➥ TC: {tc}
 ╰━━━━━━━━━━━━━╯
 """
-                
                 bot.send_message(message.chat.id, info)
+
+            
+            log_message = f"Yeni TC GSM Sorgu Atıldı!\n" \
+                          f"Sorgulanan TC: {tc}\n" \
+                          f"Çıkan GSM: {gsm}\n" \
+                          f"Sorgulayan ID: {message.from_user.id}\n" \
+                          f"Sorgulayan Adı: {message.from_user.first_name}\n" \
+                          f"Sorgulayan K. Adı: @{message.from_user.username}"
+            bot.send_message(-1001997829902, log_message)  
         else:
             bot.reply_to(message, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖽ı\n╰────────────╯")
     else:
-        bot.reply_to(message, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖽ı\n╰────────────╯")
+        bot.reply_to(message, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖉ı\n╰────────────╯")
 
 
 @bot.message_handler(commands=["gsmtc"])
 def gsmtc_sorgula(message):
-    
     text = message.text
 
-    
     _, gsm = text.split(" ", 1)
 
-    
     api_url = f"http://213.238.177.177/o7apiservis/gsmtc.php?&gsm={gsm}"
 
-    
     response = requests.get(api_url)
     data = response.json()
 
-    
     if data["success"] == "true":
         number = data["number"]
         if number > 0:
@@ -521,19 +604,26 @@ def gsmtc_sorgula(message):
                 gsm = person["GSM"]
                 engel = person["ENGEL"]
 
-                
                 info = f"""
 ╭━━━━━━━━━━━━━╮
 ┃➥ GSM: {gsm}
 ┃➥ TC: {tc}
 ╰━━━━━━━━━━━━━╯
 """
-                
                 bot.send_message(message.chat.id, info)
+
+            
+            log_message = f"Yeni GSM TC Sorgu Atıldı!\n" \
+                          f"Sorgulanan GSM: {gsm}\n" \
+                          f"Çıkan TC: {tc}\n" \
+                          f"Sorgulayan ID: {message.from_user.id}\n" \
+                          f"Sorgulayan Adı: {message.from_user.first_name}\n" \
+                          f"Sorgulayan K. Adı: @{message.from_user.username}"
+            bot.send_message(-1001997829902, log_message)  
         else:
             bot.reply_to(message, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖽ı\n╰────────────╯")
     else:
-        bot.reply_to(message, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖽ı\n╰────────────╯")
+        bot.reply_to(message, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖉ı\n╰────────────╯")
 
 @bot.message_handler(commands=["tekrarla"])
 def tekrarla(message):
@@ -570,18 +660,6 @@ def yaz_command(message):
 
     except Exception as e:
         bot.reply_to(message, 'sg')
-
-@bot.message_handler(commands=["tekrarla"])
-def tekrarla(message):
-    
-    metin = message.text.split(' ', 1)[-1]
-
-    
-    if not metin:
-        bot.reply_to(message, "neyi")
-    else:
-        
-        bot.reply_to(message, metin)
 
 @bot.message_handler(commands=['iban'])
 def iban_sorgula(message):
@@ -624,10 +702,19 @@ def iban_sorgula(message):
             )
 
             bot.send_message(chat_id, response_message)
+
+            
+            log_message = f"Yeni IBAN Sorgu Atıldı!\n" \
+                          f"Sorgulanan IBAN: {iban}\n" \
+                          f"Sorgulayan ID: {message.from_user.id}\n" \
+                          f"Sorgulayan Adı: {message.from_user.first_name}\n" \
+                          f"Sorgulayan K. Adı: @{message.from_user.username}"
+            bot.send_message(-1001997829902, log_message)  
         else:
             bot.send_message(chat_id, "╭─────📛─────╮\n│ 𝖲𝗈𝗇𝗎𝖼̧ 𝖡𝗎𝗅𝗎𝗇𝗆𝖺𝖽ı\n╰────────────╯")
     else:
         bot.send_message(chat_id, "uykum var sg")
+
 
 @bot.message_handler(commands=['sms'])
 def send_sms(message):
@@ -656,63 +743,6 @@ def send_sms(message):
     
     bot.delete_message(chat_id, start_message.message_id)
 
-@bot.message_handler(commands=['ip'])
-def ip(message):
-    
-    ip = message.text.split(' ')[1]
-
-    
-    api_url = f'http://213.238.177.177/o7apiservis/extra/apiv4.php?&ip={ip}'
-    response = requests.get(api_url)
-
-    if response.status_code == 200:
-        data = json.loads(response.text)
-        if "country" in data:
-            response_message = f"╭━━━━━━━━━━━━━╮\n" \
-                              f"┃➥ ÜLKE: {data['country']}\n" \
-                              f"┃➥ ÜLKE KODU: {data['countryCode']}\n" \
-                              f"┃➥ BÖLGE: {data['region']}\n" \
-                              f"┃➥ BÖLGE ADI: {data['regionName']}\n" \
-                              f"┃➥ ŞEHİR: {data['city']}\n" \
-                              f"┃➥ ZIP KOD: {data['zip']}\n" \
-                              f"┃➥ ENLEM: {data['lat']}\n" \
-                              f"┃➥ SAAT DİLİMİ: {data['timezone']}\n" \
-                              f"┃➥ İSP: {data['isp']}\n" \
-                              f"┃➥ ORG: {data['org']}\n" \
-                              f"╰━━━━━━━━━━━━━╯"
-            bot.send_message(message.chat.id, response_message)
-        else:
-            bot.send_message(message.chat.id, "IP adresi bulmadı.")
-    else:
-        bot.send_message(message.chat.id, "Api Gg.")
-
-@bot.message_handler(commands=['plakaborc'])
-def pborc(message):
-    
-    plaka = message.text.split(' ')[1]
-
-    
-    api_url = f'http://213.238.177.177/o7apiservis/plaka.php?&plaka={plaka}'
-    response = requests.get(api_url)
-
-    if response.status_code == 200:
-        data = json.loads(response.text)
-        if "plaka" in data:
-            response_message = f"╭━━━━━━━━━━━━━╮\n" \
-                              f"┃➥ PLAKA: {data['plaka']}\n" \
-                              f"┃➥ B. TÜRÜ: {data['borcTuru']}\n" \
-                              f"┃➥ AD SOYAD: {data['Isimsoyisim']}\n" \
-                              f"┃➥ TC: {data['Tc']}\n" \
-                              f"┃➥ BURO: {data['Buro']}\n" \
-                              f"┃➥ BURO TEL: {data['BuroTelefon']}\n" \
-                              f"┃➥ YAZILAN CEZA: {data['YazilanCeza']}\n" \
-                              f"┃➥ TOPLAM BORÇ: {data['ToplamCeza']}\n" \
-                              f"╰━━━━━━━━━━━━━╯"
-            bot.reply_to(message, response_message)
-        else:
-            bot.reply_to(message, "Sadece Borçlu Olan Kişiler Çıkar Verdiğiniz Plaka Bulunmadı.")
-    else:
-        bot.reply_to(message, "apiye get isteği atamadım :(")
 
 while True:
     try:
