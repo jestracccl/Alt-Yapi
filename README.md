@@ -12,4 +12,4 @@
 
 # İLETİŞİM
 
-**Kuramaz iseniz bana [Telegram Hesabımdan](https://t.me/Furkanisyanediyo.t.me) Ulaşabilirsiniz.
+**Kuramaz iseniz bana [Telegram Hesabımdan](https://t.me/Furkanisyanediyo.t.me) Ulaşabilirsiniz.**
