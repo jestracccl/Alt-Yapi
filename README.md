@@ -9,6 +9,7 @@
 + `TC den GSM`
 + `GSM den TC`
 + `IP Adresi Sorgu`
++ `IBAN Sorgu`
 
 # İLETİŞİM
 
