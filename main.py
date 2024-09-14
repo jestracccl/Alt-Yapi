@@ -4,7 +4,7 @@ import requests
 import urllib
 
 
-TOKEN = input("Bot Token Gir: ")
+TOKEN = input (7050615631:AAHyNo7V8TYGkRqrNZsAoH1gu1ImsSLykI)
 
 
 bot = telebot.TeleBot(TOKEN)
@@ -247,7 +247,7 @@ def tc_sorgula(message):
                     baba_tc = json_data["BABATC"]
                     cevap = f"""
 ╭━━━━━━━━━━━━━╮
-┃➥ @illegalchecker
+┃➥ @jestraccl
 ╰━━━━━━━━━━━━━╯
 ╭━━━━━━━━━━━━━━
 ┃➥ 𝖳𝖢: {tc}
@@ -339,7 +339,7 @@ def tcplus_sorgula(message):
 
                     cevap = f"""
 ╭━━━━━━━━━━━━━╮
-┃➥ @illegalchecker
+┃➥ @jestraccl
 ╰━━━━━━━━━━━━━╯
 ╭━━━━━━━━━━━━━━
 ┃➥ TC: {tc}
@@ -435,7 +435,7 @@ def sorgu(message):
 
                 info = f"""
 ╭━━━━━━━━━━━━━╮
-┃➥ @illegalchecker
+┃➥ @jestraccl
 ╰━━━━━━━━━━━━━╯
 
 ╭━━━━━━━━━━━━━━
